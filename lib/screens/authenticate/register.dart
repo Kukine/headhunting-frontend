@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:headhunting_flutter/customWidgets/background.dart';
+import 'package:flutter_tags/flutter_tags.dart';
 import 'package:headhunting_flutter/models/skill.dart';
 import 'package:headhunting_flutter/models/user.dart';
 import 'package:headhunting_flutter/services/registrationService.dart';
@@ -17,9 +17,12 @@ class Registration extends StatefulWidget {
 
 class _RegistrationState extends State<Registration> {
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
   final RegExp nameRe = new RegExp(r"^[a-zA-Z ,.'-]+$");
   final RegExp passRe = new RegExp(r"^(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9@]{6,12}$");
   List<Skill> skills = new List<Skill>();
+  List<String> skillStrings = new List<String>();
+  List<Skill> skillsForEmployee = new List<Skill>();
   
   String name = '';
   String surname = '';
@@ -29,6 +32,7 @@ class _RegistrationState extends State<Registration> {
   void _loadData() async {
     await SkillViewModel.loadSkills();
     skills = SkillViewModel.skills;
+    skillStrings = SkillViewModel.skills.map((skill) => skill.name).toList();
   }
 
   _showSkillsDialog(){
@@ -39,27 +43,67 @@ class _RegistrationState extends State<Registration> {
           shape: RoundedRectangleBorder(
             borderRadius:
                 BorderRadius.circular(20.0)),
-          child: new Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: MediaQuery.of(context).size.height * 0.7,
+          child: new AnimatedContainer(
+            duration: Duration(seconds: 2),
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.height * 0.6,
+            curve: Curves.fastOutSlowIn,
             
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Expanded(
-                  child: SizedBox(
-                    height : 200,
-                    child : ListView.builder(
-                      itemCount: SkillViewModel.skills.length,
-                      itemBuilder: (BuildContext buildContext, int index){
-                        return Container(
-                          height : 20,
-                          child : Center(child: Text('Skill : ${SkillViewModel.skills[index].name}'))
+                    
+                    child: Tags(
+                      spacing: 15,
+                      runAlignment: WrapAlignment.end,
+                      alignment: WrapAlignment.center,
+                      key: _tagStateKey,
+                      textField: TagsTextField(   
+                        suggestionTextColor: Colors.teal,
+                        hintText: 'Enter a skill',
+                        duplicates: false,
+                        width: 200,
+                        helperTextStyle: TextStyle(fontSize: 12),
+                        textStyle: TextStyle(fontSize: 14),
+                        constraintSuggestion: true,
+                        suggestions: skillStrings,
+                        onSubmitted: (String str){
+                          setState(() {
+                            
+                            Skill newSkill = new Skill(name: str, fieldOfExpertise: "IT");
+                            skillsForEmployee.add(newSkill);
+                          }
+                          );
+                        }
+                      ),
+                      itemCount: skillsForEmployee.length,
+                      itemBuilder: (int index){
+                        final skill = skillsForEmployee[index];
+
+                        return ItemTags(
+                          key: Key(index.toString()),
+                          alignment: MainAxisAlignment.end,
+
+                          activeColor: Colors.teal,
+                          index: index,
+                          title: skill.name,
+                          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                          textStyle: TextStyle(fontSize: 14),
+                          combine: ItemTagsCombine.withTextBefore,
+                          removeButton: ItemTagsRemoveButton(
+                            onRemoved: (){
+                              setState(() {
+                                skillsForEmployee.removeAt(index);
+                              });
+                              return true;
+                            }
+                          ),
                         );
                       },
-                    )
+                    ),
                   )
-                )
+
               ],
             ),
           ),
@@ -68,8 +112,12 @@ class _RegistrationState extends State<Registration> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState(){
     _loadData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -79,7 +127,7 @@ class _RegistrationState extends State<Registration> {
         ),
         body: Builder(
             builder: (scafoldContext) =>
-                CustomDecorationImage().bluredImageContainer(Form(
+                Container( child : Form(
                     key: _formKey,
                     child: Container(
                       decoration: BoxDecoration(
@@ -161,8 +209,7 @@ class _RegistrationState extends State<Registration> {
                               if (_formKey.currentState.validate()) {
                                 Scaffold.of(scafoldContext).showSnackBar(
                                     SnackBar(content: Text('Processing Data')));
-                              }
-                              User user = new User(
+                                User user = new User(
                                   name: name,
                                   surname: surname,
                                   email: email,
@@ -179,6 +226,7 @@ class _RegistrationState extends State<Registration> {
                               }, onError: (error) {
                                 print(error);
                               });
+                              }
                             },
                           ),
                           RaisedButton(

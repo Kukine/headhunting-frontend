@@ -35,9 +35,10 @@ class Employee{
   }
 
   factory Employee.fromJson(dynamic json){
-    if(json['skills'] != null){
-      var skillObjsJson = json['skills'] as List;
-      List<Skill> _skills = skillObjsJson.map((skillJson) => Skill.fromJson(skillJson)).toList();
+    if(json['experienceList'] != null){
+      var experienceObjJson = json['experienceList'] as List;
+      print(experienceObjJson);
+      List<Skill> _skills = experienceObjJson.map((experienceJson) => Skill.fromJson(experienceJson['skill'])).toList();
 
       return Employee(
         id : json['id'],

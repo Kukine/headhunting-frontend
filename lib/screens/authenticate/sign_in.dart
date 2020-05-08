@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:headhunting_flutter/customWidgets/background.dart';
 import 'package:headhunting_flutter/customWidgets/slideRight.dart';
 import 'package:headhunting_flutter/screens/authenticate/register.dart';
 import 'package:headhunting_flutter/screens/home/home.dart';
@@ -29,7 +28,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: CustomDecorationImage().bluredImageContainer(ListView(
+      body: Container( child : ListView(
         children: <Widget>[
           header(),
           formSection(),
