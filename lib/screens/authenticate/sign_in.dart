@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:headhunting_flutter/customWidgets/slideRight.dart';
 import 'package:headhunting_flutter/screens/authenticate/register.dart';
+import 'package:headhunting_flutter/screens/authenticate/registerEmployer.dart';
 import 'package:headhunting_flutter/screens/home/home.dart';
 import 'package:headhunting_flutter/services/auth.dart';
 
@@ -144,6 +145,24 @@ class _SignInState extends State<SignIn> {
                 elevation: 0.0,
                 color: Color.fromRGBO(55, 63, 81, 1),
                 child: Text("Register as Employee",
+                    style: TextStyle(color: Colors.white70)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+              ),
+            ),
+            SizedBox(height: 10,),
+            ButtonTheme(
+              height: 30,
+              minWidth: 190,
+              child: RaisedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, SlideRightRoute(page: RegisterEmployer()));
+                },
+                //signIn(emailController.text, passwordController.text);
+                elevation: 0.0,
+                color: Color.fromRGBO(55, 63, 81, 1),
+                child: Text("Register as Employer",
                     style: TextStyle(color: Colors.white70)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),

@@ -16,11 +16,11 @@ class Skill{
   final String name;
   final String fieldOfExpertise;
 
-  String toJson() => jsonEncode({
+  Map toJson() => {
     'id' : id,
     'name': name,
     'fieldOfExpertise' : fieldOfExpertise,
-  });
+  };
 
   Skill fromJson(String jsonString){
     Map<String,dynamic> skillMap = jsonDecode(jsonString);
@@ -47,13 +47,10 @@ class SkillViewModel{
         skills = new List<Skill>();
         String jsonString = await DataServices().loadSkills();
         List<dynamic> parsedJson = json.decode(jsonString);
-        print('tu');
         parsedJson.toString();
         for(int i=0; i < parsedJson.length; i++){
           skills.add(new Skill.fromJson(parsedJson[i]));
-          print(parsedJson[i]);
         }
-        print(skills.length);
     }catch(e){
       print(e);
     }

@@ -11,6 +11,8 @@ class Employee{
   String email;
   String password;
   List<Skill> skills;
+  String description;
+  int type;
 
   Employee({
     this.id,
@@ -18,27 +20,31 @@ class Employee{
     this.surname,
     this.email,
     this.password,
-    this.skills
+    this.skills,
+    this.description,
+    this.type
   });
 
-  String toJson() {
-    List<String> skills = this.skills != null ? this.skills.map((i) => i.toJson()).toList() : null;
+  Map toJson() {
+    List<Map> experiences = this.skills != null ? this.skills.map((i) => new Experience(skill : i, years : 1).toJson()).toList() : null;
 
-    return jsonEncode({'id' : id,
+    return {'id' : id,
     'name' : name,
     'surname' : surname,
     'email' : email,
     'password' : password,
-    'skills' : skills
-    });
+    'experienceList' : experiences,
+    'description' : description,
+    'type' : 1
+    };
 
   }
 
   factory Employee.fromJson(dynamic json){
     if(json['experienceList'] != null){
       var experienceObjJson = json['experienceList'] as List;
-      print(experienceObjJson);
       List<Skill> _skills = experienceObjJson.map((experienceJson) => Skill.fromJson(experienceJson['skill'])).toList();
+      
 
       return Employee(
         id : json['id'],
@@ -46,7 +52,9 @@ class Employee{
         surname: json['surname'],
         email: json['email'],
         password: json['password'],
-        skills: _skills
+        description: json['description'],
+        skills: _skills,
+        type : json['type']
       );
     }
     else{
@@ -55,7 +63,29 @@ class Employee{
         name : json['name'],
         surname: json['surname'],
         email: json['email'],
-        password: json['password']);
+        description: json['description'],
+        password: json['password'],
+        type: json['type']);
     }
   }
 }
+
+ class Experience{
+    int id;
+    Skill skill;
+    int years;
+
+    Experience({
+      this.id,
+      this.skill,
+      this.years
+    });
+
+    Map toJson(){
+      return {
+        'id' : id,
+        'skill' : skill.toJson(),
+        'years' : years
+      };
+    }
+  }
